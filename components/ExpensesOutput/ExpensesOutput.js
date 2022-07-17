@@ -14,7 +14,7 @@ const DUMMY_EXPENSES = [
     id: "e2",
     description: "A pair of trousers",
     amount: 89.99,
-    date: new Date("2022-1-05"),
+    date: new Date("2022-01-05"),
   },
   {
     id: "e3",
@@ -38,7 +38,7 @@ const DUMMY_EXPENSES = [
     id: "e6",
     description: "A pair of trousers",
     amount: 89.99,
-    date: new Date("2022-1-05"),
+    date: new Date("2022-01-05"),
   },
   {
     id: "e7",
@@ -72,7 +72,9 @@ export default function ExpensesOutput({ expenses, expensesPeriod }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 0,
     backgroundColor: GlobalStyles.colors.primary700,
   },
 });
