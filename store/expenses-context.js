@@ -88,7 +88,7 @@ function expensesReducer(state, action) {
   }
 }
 
-export default ExpensesProvider = ({ children }) => {
+const ExpensesProvider = ({ children }) => {
   const [expensesState, dispatch] = useReducer(expensesReducer, DUMMY_EXPENSES);
 
   function addExpense(expenseData) {
@@ -102,5 +102,18 @@ export default ExpensesProvider = ({ children }) => {
     dispatch({ type: "UPDATE", payload: { id: id, data: expenseData } });
   }
 
-  return <ExpensesContext.Provider>{children}</ExpensesContext.Provider>;
+  const value = {
+    expenses: expensesState,
+    addExpense,
+    deleteExpense,
+    updateExpense,
+  };
+
+  return (
+    <ExpensesContext.Provider value={value}>
+      {children}
+    </ExpensesContext.Provider>
+  );
 };
+
+export default ExpensesProvider;
