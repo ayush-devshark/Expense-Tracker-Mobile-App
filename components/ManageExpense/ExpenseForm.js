@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import React, { useState } from "react";
 import Input from "./Input";
 import Button from "../UI/Button";
@@ -10,28 +10,59 @@ export default function ExpenseForm({
   submitButtonLabel,
   defaultValues,
 }) {
-  const [inputValues, setInputValues] = useState({
-    amount: defaultValues ? defaultValues.amount.toString() : "",
-    date: defaultValues ? getFormattedDate(defaultValues.date) : "",
-    description: defaultValues ? defaultValues.description : "",
+  const [inputs, setInputs] = useState({
+    amount: {
+      value: defaultValues ? defaultValues.amount.toString() : "",
+      isValid: true,
+    },
+    date: {
+      value: defaultValues ? getFormattedDate(defaultValues.date) : "",
+      isValid: true,
+    },
+    description: {
+      value: defaultValues ? defaultValues.description : "",
+      isValid: true,
+    },
   });
 
   function inputChangedHandler(inputIdentifier, enteredValue) {
-    setInputValues((prevState) => ({
+    setInputs((prevState) => ({
       ...prevState,
-      [inputIdentifier]: enteredValue,
+      [inputIdentifier]: { value: enteredValue, isValid: true },
     }));
   }
 
   function submitHandler() {
     const expenseData = {
-      amount: Number(inputValues.amount),
-      date: new Date(inputValues.date),
-      description: inputValues.description,
+      amount: Number(inputs.amount.value),
+      date: new Date(inputs.date.value),
+      description: inputs.description.value,
     };
+
+    const amountIsValid = !isNaN(expenseData.amount) && expenseData.amount > 0;
+    const dateIsValid = expenseData.date.toString() !== "Invalid Date";
+    const descriptionIsValid = expenseData.description.trim().length > 0;
+
+    if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
+      // Alert.alert("Invalid input", "Please check your input values");
+      setInputs((prevState) => ({
+        amount: { value: prevState.amount.value, isValid: amountIsValid },
+        date: { value: prevState.date.value, isValid: dateIsValid },
+        description: {
+          value: prevState.description.value,
+          isValid: descriptionIsValid,
+        },
+      }));
+      return;
+    }
 
     onSubmit(expenseData);
   }
+
+  const formIsInValid =
+    !inputs.amount.isValid ||
+    !inputs.date.isValid ||
+    !inputs.description.isValid;
 
   return (
     <View style={styles.form}>
@@ -42,18 +73,17 @@ export default function ExpenseForm({
           style={styles.rowInput}
           textInputConfig={{
             keyboardType: "decimal-pad",
-            onChangeText: () => inputChangedHandler("amount"),
-            value: inputValues.amount,
+            onChangeText: (val) => inputChangedHandler("amount", val),
+            value: inputs.amount.value,
           }}
         />
         <Input
           label="Date"
-          style={styles.rowInput}
           textInputConfig={{
             placeholder: "YYYY-MM-DD",
             maxLength: 10,
-            onChangeText: () => inputChangedHandler("date"),
-            value: inputValues.date,
+            onChangeText: (val) => inputChangedHandler("date", val),
+            value: inputs.date.value,
           }}
         />
       </View>
@@ -62,9 +92,12 @@ export default function ExpenseForm({
         textInputConfig={{
           multiline: true,
           onChangeText: (value) => inputChangedHandler("description", value),
-          value: inputValues.description,
+          value: inputs.description.value,
         }}
       />
+      {formIsInValid && (
+        <Text>Invalid input values - please check your entered data!</Text>
+      )}
       <View style={styles.buttons}>
         <Button mode="flat" onPress={onCancel} style={styles.button}>
           Cancel
