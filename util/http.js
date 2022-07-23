@@ -7,7 +7,7 @@ export function storeExpense(expenseData) {
   axios.post(BACKEND_URL + "/expenses.json", expenseData);
 }
 export async function fetchExpenses() {
-  const res = axios.get(BACKEND_URL + "/expenses.json");
+  const res = await axios.get(BACKEND_URL + "/expenses.json");
 
   const expenses = [];
 
